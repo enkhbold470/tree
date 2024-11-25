@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tree Data Structure Simulator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f5f5f5;
+    }
+    h1 {
+      color: #333;
+    }
+    #treeCanvas {
+      border: 1px solid #ddd;
+      margin: 20px auto;
+      display: block;
+      background-color: #fff;
+    }
+    .controls {
+      margin: 20px;
+    }
+    .controls input, .controls select {
+      padding: 10px;
+      margin: 5px;
+      font-size: 16px;
+    }
+    .log {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 10px;
+      background: #f0f0f0;
+      border-radius: 5px;
+      font-size: 14px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tree Data Structure Simulator</h1>
+  <canvas id="treeCanvas" width="800" height="600"></canvas>
+  <div class="controls">
+    <select id="treeType">
+      <option value="redBlack">Red-Black Tree</option>
+      <option value="avl">AVL Tree</option>
+      <option value="balanced">Balanced Tree (B-Tree)</option>
+    </select>
+    <input type="number" id="treeInput" placeholder="Enter a number">
+    <button onclick="insertNode()">Insert</button>
+    <button onclick="resetTree()">Reset</button>
+  </div>
+  <div class="log" id="log">
+    <h3>Operations Log:</h3>
+  </div>
+
+  <script src="treeSimulator.js"></script>
+</body>
+</html>
+
