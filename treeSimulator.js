@@ -10,22 +10,26 @@ document.getElementById("treeType").addEventListener("change", (e) => {
 
 let tree = null;
 
+// Logging helper
 function logOperation(message) {
-  log.innerHTML += `<p>${message}</p>`;
+  const logEntry = document.createElement("p");
+  logEntry.textContent = message;
+  logEntry.style.color = "#333";
+  log.appendChild(logEntry);
   log.scrollTop = log.scrollHeight;
 }
 
-// Basic Node structure
+// Node class
 class Node {
   constructor(value) {
     this.value = value;
     this.left = null;
     this.right = null;
-    this.color = "black"; // Default for Red-Black Trees
+    this.color = "black"; // Default color
   }
 }
 
-// Tree base class
+// Base Binary Tree
 class BinaryTree {
   constructor() {
     this.root = null;
@@ -57,11 +61,12 @@ class BinaryTree {
     if (node == null) return;
     ctx.beginPath();
     ctx.arc(x, y, 20, 0, 2 * Math.PI);
-    ctx.fillStyle = node.color || "black";
+    ctx.fillStyle = node.color || "#4A90E2";
     ctx.fill();
     ctx.stroke();
     ctx.fillStyle = "white";
-    ctx.fillText(node.value, x - 5, y + 5);
+    ctx.font = "14px Arial";
+    ctx.fillText(node.value, x - 7, y + 5);
 
     if (node.left) {
       ctx.moveTo(x, y);
@@ -78,7 +83,7 @@ class BinaryTree {
   }
 }
 
-// Specialized AVL Tree
+// AVL Tree with color visualization
 class AVLTree extends BinaryTree {
   _insert(node, value) {
     if (node == null) return new Node(value);
@@ -89,7 +94,6 @@ class AVLTree extends BinaryTree {
       node.right = this._insert(node.right, value);
     }
 
-    // Balance the tree
     const balance = this._getBalance(node);
     if (balance > 1 && value < node.left.value) {
       return this._rotateRight(node);
@@ -132,24 +136,22 @@ class AVLTree extends BinaryTree {
   }
 }
 
-// Initialize tree based on selection
 function resetTree() {
   switch (treeType) {
     case "redBlack":
-      tree = new BinaryTree(); // Red-Black logic can be added
+      tree = new BinaryTree();
       break;
     case "avl":
       tree = new AVLTree();
       break;
     case "balanced":
-      tree = new BinaryTree(); // Placeholder for B-Tree
+      tree = new BinaryTree();
       break;
   }
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   log.innerHTML = "<h3>Operations Log:</h3>";
 }
 
-// Insert node
 function insertNode() {
   const value = parseInt(document.getElementById("treeInput").value);
   if (isNaN(value)) {
@@ -160,5 +162,4 @@ function insertNode() {
   document.getElementById("treeInput").value = "";
 }
 
-// Initialize
 resetTree();
