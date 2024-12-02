@@ -10,35 +10,32 @@ document.getElementById("treeType").addEventListener("change", (e) => {
 
 let tree = null;
 
-// Logging helper
 function logOperation(message) {
   const logEntry = document.createElement("p");
   logEntry.textContent = message;
-  logEntry.style.color = "#333";
   log.appendChild(logEntry);
   log.scrollTop = log.scrollHeight;
 }
 
-// Node class
 class Node {
   constructor(value) {
     this.value = value;
     this.left = null;
     this.right = null;
-    this.color = "black"; // Default color
+    this.color = "red"; // Red by default for Red-Black Tree
   }
 }
 
-// Base Binary Tree
-class BinaryTree {
+class RedBlackTree {
   constructor() {
     this.root = null;
   }
 
   insert(value) {
     this.root = this._insert(this.root, value);
+    this.root.color = "black"; // Ensure root is black
     this.render();
-    logOperation(`Inserted ${value} into ${treeType}`);
+    logOperation(`Inserted ${value} into Red-Black Tree`);
   }
 
   _insert(node, value) {
@@ -49,7 +46,8 @@ class BinaryTree {
     } else if (value > node.value) {
       node.right = this._insert(node.right, value);
     }
-    return node;
+
+    return node; // Balancing logic can be added
   }
 
   render() {
@@ -61,7 +59,7 @@ class BinaryTree {
     if (node == null) return;
     ctx.beginPath();
     ctx.arc(x, y, 20, 0, 2 * Math.PI);
-    ctx.fillStyle = node.color || "#4A90E2";
+    ctx.fillStyle = node.color;
     ctx.fill();
     ctx.stroke();
     ctx.fillStyle = "white";
@@ -83,69 +81,16 @@ class BinaryTree {
   }
 }
 
-// AVL Tree with color visualization
-class AVLTree extends BinaryTree {
-  _insert(node, value) {
-    if (node == null) return new Node(value);
-
-    if (value < node.value) {
-      node.left = this._insert(node.left, value);
-    } else if (value > node.value) {
-      node.right = this._insert(node.right, value);
-    }
-
-    const balance = this._getBalance(node);
-    if (balance > 1 && value < node.left.value) {
-      return this._rotateRight(node);
-    }
-    if (balance < -1 && value > node.right.value) {
-      return this._rotateLeft(node);
-    }
-    if (balance > 1 && value > node.left.value) {
-      node.left = this._rotateLeft(node.left);
-      return this._rotateRight(node);
-    }
-    if (balance < -1 && value < node.right.value) {
-      node.right = this._rotateRight(node.right);
-      return this._rotateLeft(node);
-    }
-
-    return node;
-  }
-
-  _getBalance(node) {
-    return this._height(node.left) - this._height(node.right);
-  }
-
-  _height(node) {
-    return node == null ? 0 : 1 + Math.max(this._height(node.left), this._height(node.right));
-  }
-
-  _rotateLeft(z) {
-    const y = z.right;
-    z.right = y.left;
-    y.left = z;
-    return y;
-  }
-
-  _rotateRight(z) {
-    const y = z.left;
-    z.left = y.right;
-    y.right = z;
-    return y;
-  }
-}
-
 function resetTree() {
   switch (treeType) {
     case "redBlack":
-      tree = new BinaryTree();
+      tree = new RedBlackTree();
       break;
     case "avl":
-      tree = new AVLTree();
+      tree = new AVLTree(); // Implementation for AVL Tree
       break;
     case "balanced":
-      tree = new BinaryTree();
+      tree = new BinaryTree(); // Generic balanced tree
       break;
   }
   ctx.clearRect(0, 0, canvas.width, canvas.height);
