@@ -18,11 +18,16 @@ function logOperation(message) {
 }
 
 class Node {
-  constructor(value) {
+  constructor(value, color = "red") {
     this.value = value;
     this.left = null;
     this.right = null;
-    this.color = "red"; // Red by default for Red-Black Tree
+    this.color = color; // Default to red
+    this.parent = null; // Keep track of the parent for balancing
+  }
+
+  isRed() {
+    return this.color === "red";
   }
 }
 
@@ -32,22 +37,130 @@ class RedBlackTree {
   }
 
   insert(value) {
-    this.root = this._insert(this.root, value);
-    this.root.color = "black"; // Ensure root is black
+    const newNode = new Node(value);
+    if (this.root === null) {
+      this.root = newNode;
+      this.root.color = "black"; // Root is always black
+    } else {
+      this._insert(this.root, newNode);
+    }
+    this.fixInsert(newNode);
     this.render();
     logOperation(`Inserted ${value} into Red-Black Tree`);
   }
 
-  _insert(node, value) {
-    if (node == null) return new Node(value);
+  _insert(current, newNode) {
+    if (newNode.value < current.value) {
+      if (current.left === null) {
+        current.left = newNode;
+        newNode.parent = current;
+      } else {
+        this._insert(current.left, newNode);
+      }
+    } else if (newNode.value > current.value) {
+      if (current.right === null) {
+        current.right = newNode;
+        newNode.parent = current;
+      } else {
+        this._insert(current.right, newNode);
+      }
+    }
+  }
 
-    if (value < node.value) {
-      node.left = this._insert(node.left, value);
-    } else if (value > node.value) {
-      node.right = this._insert(node.right, value);
+  fixInsert(node) {
+    while (node !== this.root && node.parent.isRed()) {
+      const parent = node.parent;
+      const grandparent = parent.parent;
+
+      if (parent === grandparent.left) {
+        const uncle = grandparent.right;
+
+        // Case 1: Uncle is red
+        if (uncle && uncle.isRed()) {
+          parent.color = "black";
+          uncle.color = "black";
+          grandparent.color = "red";
+          node = grandparent;
+        } else {
+          // Case 2: Node is a right child
+          if (node === parent.right) {
+            this.rotateLeft(parent);
+            node = parent;
+          }
+
+          // Case 3: Node is a left child
+          parent.color = "black";
+          grandparent.color = "red";
+          this.rotateRight(grandparent);
+        }
+      } else {
+        const uncle = grandparent.left;
+
+        // Case 1: Uncle is red
+        if (uncle && uncle.isRed()) {
+          parent.color = "black";
+          uncle.color = "black";
+          grandparent.color = "red";
+          node = grandparent;
+        } else {
+          // Case 2: Node is a left child
+          if (node === parent.left) {
+            this.rotateRight(parent);
+            node = parent;
+          }
+
+          // Case 3: Node is a right child
+          parent.color = "black";
+          grandparent.color = "red";
+          this.rotateLeft(grandparent);
+        }
+      }
+    }
+    this.root.color = "black"; // Ensure root is always black
+  }
+
+  rotateLeft(node) {
+    const newParent = node.right;
+    node.right = newParent.left;
+
+    if (newParent.left) {
+      newParent.left.parent = node;
     }
 
-    return node; // Balancing logic can be added
+    newParent.parent = node.parent;
+
+    if (node.parent === null) {
+      this.root = newParent;
+    } else if (node === node.parent.left) {
+      node.parent.left = newParent;
+    } else {
+      node.parent.right = newParent;
+    }
+
+    newParent.left = node;
+    node.parent = newParent;
+  }
+
+  rotateRight(node) {
+    const newParent = node.left;
+    node.left = newParent.right;
+
+    if (newParent.right) {
+      newParent.right.parent = node;
+    }
+
+    newParent.parent = node.parent;
+
+    if (node.parent === null) {
+      this.root = newParent;
+    } else if (node === node.parent.right) {
+      node.parent.right = newParent;
+    } else {
+      node.parent.left = newParent;
+    }
+
+    newParent.right = node;
+    node.parent = newParent;
   }
 
   render() {
@@ -56,7 +169,9 @@ class RedBlackTree {
   }
 
   _renderNode(node, x, y, offset) {
-    if (node == null) return;
+    if (node === null) return;
+
+    // Draw node
     ctx.beginPath();
     ctx.arc(x, y, 20, 0, 2 * Math.PI);
     ctx.fillStyle = node.color;
@@ -66,6 +181,7 @@ class RedBlackTree {
     ctx.font = "14px Arial";
     ctx.fillText(node.value, x - 7, y + 5);
 
+    // Draw edges
     if (node.left) {
       ctx.moveTo(x, y);
       ctx.lineTo(x - offset, y + 70);
@@ -87,10 +203,10 @@ function resetTree() {
       tree = new RedBlackTree();
       break;
     case "avl":
-      tree = new AVLTree(); // Implementation for AVL Tree
+      tree = new AVLTree(); // Placeholder for AVL Tree
       break;
     case "balanced":
-      tree = new BinaryTree(); // Generic balanced tree
+      tree = new BinaryTree(); // Placeholder for generic balanced tree
       break;
   }
   ctx.clearRect(0, 0, canvas.width, canvas.height);
