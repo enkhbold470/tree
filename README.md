@@ -1,5 +1,7 @@
 # This is repo for tree data structure
 
+<img width="1059" alt="image" src="https://github.com/user-attachments/assets/22fbe734-f671-405a-ac1a-6d80513e72be">
+
 This is a minimal JavaScript project for visualizing a **Red-Black Tree** on an HTML canvas. Users can insert nodes and observe the tree's structure and balancing properties in real time.
 
 ---
@@ -57,4 +59,3 @@ tree.insert(value);
 ---
 
 This project is a simple starting point for understanding Red-Black Trees. Have fun exploring!
-<img width="1059" alt="image" src="https://github.com/user-attachments/assets/22fbe734-f671-405a-ac1a-6d80513e72be">
